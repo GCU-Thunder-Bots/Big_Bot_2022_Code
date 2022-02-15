@@ -157,5 +157,6 @@ int main() {
   cont.Screen.clearScreen();
   cont.Screen.setCursor(0, 0);
   cont.Screen.print("Auto.");
+  //begins driving procedure
   eventLoop();
 }
