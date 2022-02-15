@@ -106,7 +106,6 @@ void TankDrive(float xAxis, float yAxis){
   mot_dtRightFront.spin(forward, rightMotSpeed, pct);
   mot_dtRightBack.spin(forward, rightMotSpeed, pct);
   */
-//asijpourpfhwphph
   //basic tank drive
   mot_dtRightFront.spin(forward, xAxis, pct);
   mot_dtRightBack.spin(forward, xAxis, pct);
