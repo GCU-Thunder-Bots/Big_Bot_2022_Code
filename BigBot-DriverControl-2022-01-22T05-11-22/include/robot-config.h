@@ -15,6 +15,7 @@ extern motor mot_dtRightFront;  // Front Right Drive Motor (right)
 extern motor mot_dtRightBack;   // Back Right Drive Motor (right)
 extern motor mot_frontClaw;     //front claw for grabbing mobile goals
 extern motor mot_arm;
+extern motor ring_cup;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

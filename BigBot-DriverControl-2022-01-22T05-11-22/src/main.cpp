@@ -137,6 +137,13 @@ void eventLoop() {
     }else{
       mot_arm.spin(forward, 0, pct);
     }
+    if(cont.ButtonL2.pressing()){
+      ring_cup.spin(forward, 10, pct);
+    }else if(cont.ButtonR2.pressing()){
+      ring_cup.spin(reverse, 10, pct);
+    }else{
+      ring_cup.spin(forward, 0, pct);
+    }
 
   }
 }
