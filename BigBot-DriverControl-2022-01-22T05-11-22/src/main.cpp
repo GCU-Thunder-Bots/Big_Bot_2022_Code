@@ -71,6 +71,7 @@ void beginDriver() {
   cont.Screen.clearScreen();
   cont.Screen.setCursor(0, 0);
   cont.Screen.print("Driver Active.");
+  cont.Screen.setCursor(1,0);
 }
 /*
 void toggleIntake() {  // Turn On/Off Ring Intake
@@ -118,6 +119,9 @@ void ScoopDrive(int pos) {
 }
 */
 void eventLoop() {
+  cont.Screen.clearScreen();
+    ring_cup.resetRotation();
+    mot_arm.spinTo(40, rotationUnits::deg, 25, velocityUnits::pct, false);
   while(allowMotion == true) {
     TankDrive(cont.Axis3.position(), cont.Axis2.position());
 
@@ -129,8 +133,46 @@ void eventLoop() {
     }else{
       mot_frontClaw.spin(forward, 0, pct);
     }
-    //simple button controls
+    //grab
+    if(cont.ButtonL2.pressing()){
+      //spin to 100 degrees at 25% power and don't wait to finish
+      ring_cup.spinTo(115, rotationUnits::deg, 15, velocityUnits::pct, false );
+    }
+    //pick up
+    else if(cont.ButtonR2.pressing()){
+      //spin to 30 degrees at 45% power and don't wait to finish
+      ring_cup.spinTo(30, rotationUnits::deg, 25, velocityUnits::pct, false);
+      mot_arm.spinTo(40, rotationUnits::deg, 25, velocityUnits::pct, false);
+    }
+
     if(cont.ButtonL1.pressing()){
+      mot_arm.startSpinTo(1270, rotationUnits::deg, 75, velocityUnits::pct);
+     // mot_arm.StartspinTo(1270, rotationUnits::deg, 75, velocityUnits::pct, false);
+     while(mot_arm.isSpinning()){
+      ring_cup.spinTo(mot_arm.rotation(degrees)+2, rotationUnits::deg, 35, velocityUnits::pct, false );
+     }
+      //ring_cup.spinTo(200, rotationUnits::deg, 5, velocityUnits::pct, false);
+    }
+
+    if(cont.ButtonR1.pressing()){
+      ring_cup.spin(reverse, 10, pct);
+    }
+
+   
+    cont.Screen.clearScreen();
+    cont.Screen.setCursor(0, 0);
+    cont.Screen.print("Ring Cup: ");
+    cont.Screen.print( ring_cup.rotation(rotationUnits::deg));
+    cont.Screen.print( " : Mot_arm: ");
+    cont.Screen.print(mot_arm.rotation(rotationUnits::deg));
+
+    /*
+    cont.Screen.clearScreen();
+    cont.Screen.setCursor(0, 0);
+    cont.Screen.print(mot_arm.rotation(rotationUnits::deg));
+*/
+    //simple button controls
+    /*if(cont.ButtonL1.pressing()){
       mot_arm.spin(forward, 100, pct);
     }else if(cont.ButtonR1.pressing()){
       mot_arm.spin(reverse, 100, pct);
@@ -144,9 +186,13 @@ void eventLoop() {
     }else{
       ring_cup.spin(forward, 0, pct);
     }
-
+    
+    */
   }
 }
+
+
+
 
 /////////////////////// MAIN FUNTIONS ////////////////////////////
 
