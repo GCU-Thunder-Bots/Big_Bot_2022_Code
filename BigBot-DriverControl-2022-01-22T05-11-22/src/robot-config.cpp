@@ -11,10 +11,10 @@ competition comp = competition();
 
 // triport gyroPort = triport();
 // gyro gyroSensor = gyro();
-motor mot_dtRightFront = motor(PORT2, ratio18_1, true);  // Front Right Drive Motor (right)
-motor mot_dtRightBack = motor(PORT3, ratio18_1, true);   // Back Right Drive Motor (right)
-motor mot_dtLeftFront = motor(PORT4, ratio18_1, false);   // Front Left Drive Motor (left)
-motor mot_dtLeftBack = motor(PORT5, ratio18_1, false);    // Back Left Drive Motor (left)
+motor mot_dtRightFront = motor(PORT2, ratio18_1, false);  // Front Right Drive Motor (right)
+motor mot_dtRightBack = motor(PORT3, ratio18_1, false);   // Back Right Drive Motor (right)
+motor mot_dtLeftFront = motor(PORT4, ratio18_1, true);   // Front Left Drive Motor (left)
+motor mot_dtLeftBack = motor(PORT5, ratio18_1, true);    // Back Left Drive Motor (left)
 
 motor mot_frontClaw = motor(PORT6, ratio36_1, true);
 motor mot_arm = motor(PORT7, ratio36_1, true);

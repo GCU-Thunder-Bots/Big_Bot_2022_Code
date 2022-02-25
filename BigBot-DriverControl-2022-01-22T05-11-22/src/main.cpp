@@ -55,6 +55,7 @@ using namespace vex;
 
 bool intakeState = false;
 bool allowMotion = true;
+float speedControls = 2;
 
 float map(float input, float instart, float instop, float outstart, float outstop) {
   return outstart + (outstop - outstart) * ((input - instart) / (instop - instart));
@@ -108,10 +109,10 @@ void TankDrive(float xAxis, float yAxis){
   mot_dtRightBack.spin(forward, rightMotSpeed, pct);
   */
   //basic tank drive
-  mot_dtRightFront.spin(forward, xAxis, pct);
-  mot_dtRightBack.spin(forward, xAxis, pct);
-  mot_dtLeftFront.spin(forward, yAxis, pct);
-  mot_dtLeftBack.spin(forward, yAxis, pct);
+  mot_dtRightFront.spin(forward, xAxis/speedControls, pct);
+  mot_dtRightBack.spin(forward, xAxis/speedControls, pct);
+  mot_dtLeftFront.spin(forward, yAxis/speedControls, pct);
+  mot_dtLeftBack.spin(forward, yAxis/speedControls, pct);
 }
 /*
 void ScoopDrive(int pos) {
@@ -124,6 +125,14 @@ void eventLoop() {
     mot_arm.spinTo(40, rotationUnits::deg, 25, velocityUnits::pct, false);
   while(allowMotion == true) {
     TankDrive(cont.Axis3.position(), cont.Axis2.position());
+
+    if(cont.ButtonX.pressing()){
+      if(speedControls ==1){
+        speedControls =2;
+      }else{
+        speedControls = 1;
+      }
+    }
 
     //simple claw controls
     if(cont.ButtonA.pressing()){
