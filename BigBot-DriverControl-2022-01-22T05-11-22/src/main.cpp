@@ -120,6 +120,8 @@ void ScoopDrive(int pos) {
 }
 */
 void eventLoop() {
+
+  bool raising = false;
   cont.Screen.clearScreen();
     ring_cup.resetRotation();
     mot_arm.spinTo(40, rotationUnits::deg, 25, velocityUnits::pct, false);
@@ -155,12 +157,25 @@ void eventLoop() {
     }
 
     if(cont.ButtonL1.pressing()){
-      mot_arm.startSpinTo(1270, rotationUnits::deg, 75, velocityUnits::pct);
-     // mot_arm.StartspinTo(1270, rotationUnits::deg, 75, velocityUnits::pct, false);
-     while(mot_arm.isSpinning()){
-      ring_cup.spinTo(mot_arm.rotation(degrees)+2, rotationUnits::deg, 35, velocityUnits::pct, false );
-     }
+      raising = true;
       //ring_cup.spinTo(200, rotationUnits::deg, 5, velocityUnits::pct, false);
+    }
+    while(raising){
+       mot_arm.spinTo(1270, rotationUnits::deg, 75, velocityUnits::pct, false);
+     // mot_arm.StartspinTo(1270, rotationUnits::deg, 75, velocityUnits::pct, false);
+      if(mot_arm.isSpinning()){
+        ring_cup.spinTo(ring_cup.rotation(rotationUnits::deg)+10.5, rotationUnits::deg, 75, velocityUnits::pct, true);
+        cont.Screen.clearScreen();
+        cont.Screen.setCursor(0,0);
+        cont.Screen.print(ring_cup.rotation(rotationUnits::deg));
+
+      }
+      if(!mot_arm.isSpinning()){
+        //move ring cup 119.6
+        ring_cup.spinTo(135, rotationUnits::deg, 45, velocityUnits::pct);
+        raising = false;
+      }
+       
     }
 
     if(cont.ButtonR1.pressing()){
@@ -172,6 +187,7 @@ void eventLoop() {
     cont.Screen.setCursor(0, 0);
     cont.Screen.print("Ring Cup: ");
     cont.Screen.print( ring_cup.rotation(rotationUnits::deg));
+    cont.Screen.setCursor(10, 0);
     cont.Screen.print( " : Mot_arm: ");
     cont.Screen.print(mot_arm.rotation(rotationUnits::deg));
 
