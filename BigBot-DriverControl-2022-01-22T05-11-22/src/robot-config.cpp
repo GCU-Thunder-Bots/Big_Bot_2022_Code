@@ -2,6 +2,7 @@
 
 using namespace vex;
 
+
 // A global instance of brain used for printing to the V5 brain screen
 brain Brain;
 
@@ -30,6 +31,8 @@ motor mot_sweeperMotor = motor(PORT8, ratio18_1, false);  // Sweeper Motor (left
  *
  * This should be called at the start of your int main function.
  */
+
+ 
 void vexcodeInit(void) {
   // Nothing to initialize
 }

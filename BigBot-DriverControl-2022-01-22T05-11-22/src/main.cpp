@@ -14,6 +14,8 @@
 #include <cmath>
 
 using namespace vex;
+using signature = vision::signature;
+using code = vision::code;
 
 #define DDRIVE_MIN -100 //The minimum value x or y can be.
 #define DDRIVE_MAX 100  //The maximum value x or y can be.
@@ -63,13 +65,49 @@ float map(float input, float instart, float instop, float outstart, float outsto
   return outstart + (outstop - outstart) * ((input - instart) / (instop - instart));
 }
 
+void moveArm(float degs, float speed, bool waitToFinish){
+  bool moveCup = false;
+  if(degs > 100){
+    moveCup = true;
+  }
+  if(moveCup){
+    mot_arm.startSpinTo(degs, degrees, speed, pct);
+    while(mot_arm.isSpinning()){
+      ring_cup.spinTo(ring_cup.rotation(degrees)+10.5, degrees, 75, pct, true);
+    }
+  }else{
+    mot_arm.spinTo(degs, degrees, speed, pct, waitToFinish);
+  }
+}
+
+void moveCup(float rot, float speed, bool waitToFinish){
+  ring_cup.spinTo(rot, degrees, speed, pct, waitToFinish);
+}
+
+
+
 // Driver Control Event Callback
 //
 //  When Driver Is Active:
 //  - Start Driver Event Loop
 //  - Change Screen
+
+void Init(){
+  cont.Screen.clearScreen();
+  cont.Screen.setCursor(0, 0);
+  cont.Screen.print("Initing.");
+  //reset wheel rotations 
+  mot_dtRightFront.resetRotation();
+  mot_dtRightBack.resetRotation();
+  mot_dtLeftFront.resetRotation();
+  mot_dtLeftBack.resetRotation();
+
+  //reset arm and cup rotations
+  mot_arm.resetRotation();
+  ring_cup.resetPosition();
+  //wait(0.5, timeUnits::sec);
+}
 void beginDriver() {
-  //mot_scoopMotor.resetRotation();
   allowMotion = true;
   cont.Screen.clearScreen();
   cont.Screen.setCursor(0, 0);
@@ -83,46 +121,51 @@ void autonomous(){
   cont.Screen.print("Auto Active.");
   
   //set arm position neutral
-  mot_arm.spinTo(40, degrees, 25, pct, true);
-  ring_cup.spinTo(30, degrees, 25, pct, true);
+  //mot_arm.spinTo(40, degrees, 25, pct, true);
+  moveArm(40, 25, true);
+  moveCup(30, 25, true);
+  //ring_cup.spinTo(30, degrees, 25, pct, true);
 
-  mot_arm.startSpinTo(500, degrees, 75, pct);
+ /* mot_arm.startSpinTo(500, degrees, 75, pct);
   while(mot_arm.isSpinning()){
     ring_cup.spinTo(ring_cup.rotation(degrees)+10.5, degrees, 75, pct, true);
-  }
+  }*/
+  moveArm(513, 75, true);
 
   //drive forward small amount
+   mot_dtRightFront.resetRotation();
+  mot_dtRightBack.resetRotation();
+  mot_dtLeftFront.resetRotation();
+  mot_dtLeftBack.resetRotation();
+  mot_dtRightFront.spinTo(-1110, degrees, -100, pct, false);
+  mot_dtRightBack.spinTo(-1110, degrees, -100, pct, false);
+  mot_dtLeftFront.spinTo(-1110, degrees, -100, pct, false);
+  mot_dtLeftBack.spinTo(-1110, degrees, -100, pct, true);
+  moveArm(490, -55, true);
+  //this_thread::sleep_for(15, timeUnits::sec);
+  wait(1, timeUnits::sec);
+
+  //ring_cup.spinTo(30, degrees, 15, pct, true);
+  moveCup(27, 10, true);
+  //this_thread::sleep_for(2);
+  wait(2, timeUnits::sec);
   mot_dtRightFront.resetRotation();
   mot_dtRightBack.resetRotation();
   mot_dtLeftFront.resetRotation();
   mot_dtLeftBack.resetRotation();
-  mot_dtRightFront.spinTo(-200, degrees, -50, pct, false);
-  mot_dtRightBack.spinTo(-200, degrees, -50, pct, false);
-  mot_dtLeftFront.spinTo(-200, degrees, -50, pct,false);
-  mot_dtLeftBack.spinTo(-200, degrees, -50, pct, false);
-  this_thread::sleep_for(2);
-
-  ring_cup.spinTo(30, degrees, 15, pct, true);
-
-
-
+  mot_dtRightFront.spinTo(700, degrees, -100, pct, false);
+  mot_dtRightBack.spinTo(700, degrees, -100, pct, false);
+  mot_dtLeftFront.spinTo(700, degrees, -100, pct, false);
+  mot_dtLeftBack.spinTo(700, degrees, -100, pct, true);
   //reset arm to default before driver mode
-  mot_arm.spinTo(40, degrees, 25, pct, true);
-  ring_cup.spinTo(30, degrees, 25, pct, true);
+  //mot_arm.spinTo(40, degrees, 25, pct, true);
+  moveArm(40, 25, true);
+  moveCup(30, 25, true);
+  //ring_cup.spinTo(30, degrees, 25, pct, true);
   //start driver mode
   allowDriverOperated = true;
 }
 
-
-/*
-void toggleIntake() {  // Turn On/Off Ring Intake
-  if (intakeState) {
-    mot_intakeMotor.stop(coast);
-    return;
-  } 
-  mot_intakeMotor.spin(forward, 100, pct);
-}
-*/
 void TankDrive(float xAxis, float yAxis){
   // Major ispiration from: https://home.kendra.com/mauser/joystick.html
   // Massive thanks to kendra.com
@@ -154,16 +197,11 @@ void TankDrive(float xAxis, float yAxis){
   mot_dtLeftFront.spin(forward, yAxis/speedControls, pct);
   mot_dtLeftBack.spin(forward, yAxis/speedControls, pct);
 }
-/*
-void ScoopDrive(int pos) {
-  mot_scoopMotor.spinTo(map(pos, -100, 100, 0, 80), deg, 50, velocityUnits::pct);
-}
-*/
+
 void eventLoop() {
 
   bool raising = false;
-  cont.Screen.clearScreen();
-    ring_cup.resetRotation();
+  cont.Screen.clearScreen();;
     //mot_arm.spinTo(40, rotationUnits::deg, 25, pct, false);
   while(allowMotion == true && allowDriverOperated) {
     TankDrive(cont.Axis3.position(), cont.Axis2.position());
@@ -187,13 +225,16 @@ void eventLoop() {
     //grab
     if(cont.ButtonL2.pressing()){
       //spin to 100 degrees at 25% power and don't wait to finish
-      ring_cup.spinTo(115, rotationUnits::deg, 15, pct, false );
+     // ring_cup.spinTo(115, rotationUnits::deg, 15, pct, false );
+      moveCup(115, 15, false);
     }
     //pick up
     else if(cont.ButtonR2.pressing()){
       //spin to 30 degrees at 45% power and don't wait to finish
-      ring_cup.spinTo(30, rotationUnits::deg, 25, pct, false);
-      mot_arm.spinTo(40, rotationUnits::deg, 25, pct, false);
+      //ring_cup.spinTo(30, rotationUnits::deg, 25, pct, false);
+      moveCup(30, 25, false);
+      moveArm(40, 25, false);
+      //mot_arm.spinTo(40, rotationUnits::deg, 25, pct, false);
     }
 
     if(cont.ButtonL1.pressing()){
@@ -212,7 +253,6 @@ void eventLoop() {
       }
       if(!mot_arm.isSpinning()){
         //move ring cup 119.6
-        
         raising = false;
       }
        
@@ -220,9 +260,11 @@ void eventLoop() {
 
     if(cont.ButtonR1.pressing()){
       if(!(ring_cup.rotation(rotationUnits::deg) >= 115 && ring_cup.rotation(rotationUnits::deg) <=145)){
-      ring_cup.spinTo(140, rotationUnits::deg, 15, pct);
+        moveCup(140, 15, false);
+      //ring_cup.spinTo(140, rotationUnits::deg, 15, pct);
       }else{
-        ring_cup.spinTo(260, rotationUnits::deg);
+        moveCup(260, 15, false);
+        //ring_cup.spinTo(260, rotationUnits::deg);
       }
     }
 
@@ -268,11 +310,12 @@ void eventLoop() {
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  comp.autonomous(autonomous);
+  Init();
+ autonomous();
   //wait for 45 seconds for auto to complete
-  this_thread::sleep_for(45);
+  //wait(45, timeUnits::sec);
   //wait for auto completion
-  comp.drivercontrol(beginDriver);
+  beginDriver();
  // TOGGLEINTAKE.pressed(toggleIntake);        // Handle (  X   Button) Toggle Intake Button Pressed   
   // BREAKMODETOGGLE.pressed(toggleBreakMode);  // Handle (  Y   Button) Toggle Break Mode Button Pressed 
   // TURN180DEG.pressed(turn180Deg);            // Handle (  A   Button) Toggle Intake Pressed      
@@ -284,4 +327,7 @@ int main() {
   cont.Screen.print("Auto.");
   //begins driving procedure
   eventLoop();
+  while(1){
+    wait(1, timeUnits::sec);
+  }
 }
