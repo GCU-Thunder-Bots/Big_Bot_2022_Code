@@ -433,21 +433,21 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   Init();
-  programmingSkills();
- //autonomous();
+  //programmingSkills();
+ autonomous();
   //wait for 45 seconds for auto to complete
   //wait(45, timeUnits::sec);
   //wait for auto completion
- // beginDriver();
+  beginDriver();
  // TOGGLEINTAKE.pressed(toggleIntake);        // Handle (  X   Button) Toggle Intake Button Pressed   
   // BREAKMODETOGGLE.pressed(toggleBreakMode);  // Handle (  Y   Button) Toggle Break Mode Button Pressed 
   // TURN180DEG.pressed(turn180Deg);            // Handle (  A   Button) Toggle Intake Pressed      
   // SLIDERACTUATE.pressed(doSliderMotion);     // Handle (  B   Button) Toggle Intake Pressed   
 
   // Begin Program Logic
- /* cont.Screen.clearScreen();
+  cont.Screen.clearScreen();
   cont.Screen.setCursor(0, 0);
-  cont.Screen.print("Auto.");*/
+  cont.Screen.print("Auto.");
   //begins driving procedure
   eventLoop();
   while(1){
