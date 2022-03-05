@@ -22,7 +22,7 @@ using code = vision::code;
 #define MOTOR_MIN_PWM -100 //The minimum value the motor output can be.
 #define MOTOR_MAX_PWM 100 //The maximum value the motor output can be.
 
-
+//BigBot-DriverControl-2022-01-22T05-11-22
 /////////////////////// Connection Defenitions ////////////////////////////
 //       ---- MOTORS ----
 //     L1DRIVETRAINMOT   PORT1
@@ -115,6 +115,128 @@ void beginDriver() {
   cont.Screen.setCursor(1,0);
 }
 
+void driveWheels(float deg, float speed, bool waitToFinish){
+  if(waitToFinish){
+    mot_dtRightFront.resetRotation();
+    mot_dtRightBack.resetRotation();
+    mot_dtLeftFront.resetRotation();
+    mot_dtLeftBack.resetRotation();
+    mot_dtRightFront.spinTo(deg, degrees, speed, pct, false);
+    mot_dtRightBack.spinTo(deg, degrees, speed, pct, false);
+    mot_dtLeftFront.spinTo(deg, degrees, speed, pct, false);
+    mot_dtLeftBack.spinTo(deg, degrees, speed, pct, true);
+  }else{
+    mot_dtRightFront.resetRotation();
+    mot_dtRightBack.resetRotation();
+    mot_dtLeftFront.resetRotation();
+    mot_dtLeftBack.resetRotation();
+    mot_dtRightFront.spinTo(deg, degrees, speed, pct, false);
+    mot_dtRightBack.spinTo(deg, degrees, speed, pct, false);
+    mot_dtLeftFront.spinTo(deg, degrees, speed, pct, false);
+    mot_dtLeftBack.spinTo(deg, degrees, speed, pct, false);
+  }
+}
+
+void turnWheels(float deg, float speed, bool isLeft, bool waitToFinish){
+  if(waitToFinish){
+    if(isLeft){
+    mot_dtRightFront.resetRotation();
+    mot_dtRightBack.resetRotation();
+    mot_dtLeftFront.resetRotation();
+    mot_dtLeftBack.resetRotation();
+    mot_dtRightFront.spinTo(-deg, degrees, -speed, pct, false);
+    mot_dtRightBack.spinTo(-deg, degrees, -speed, pct, false);
+    mot_dtLeftFront.spinTo(deg, degrees, speed, pct, false);
+    mot_dtLeftBack.spinTo(deg, degrees, speed, pct, true);
+    }else{
+      mot_dtRightFront.resetRotation();
+      mot_dtRightBack.resetRotation();
+      mot_dtLeftFront.resetRotation();
+      mot_dtLeftBack.resetRotation();
+      mot_dtRightFront.spinTo(deg, degrees, speed, pct, false);
+      mot_dtRightBack.spinTo(deg, degrees, speed, pct, false);
+      mot_dtLeftFront.spinTo(-deg, degrees, -speed, pct, false);
+      mot_dtLeftBack.spinTo(-deg, degrees, -speed, pct, true);
+    }
+  }else{
+    if(isLeft){
+    mot_dtRightFront.resetRotation();
+    mot_dtRightBack.resetRotation();
+    mot_dtLeftFront.resetRotation();
+    mot_dtLeftBack.resetRotation();
+    mot_dtRightFront.spinTo(-deg, degrees, -speed, pct, false);
+    mot_dtRightBack.spinTo(-deg, degrees, -speed, pct, false);
+    mot_dtLeftFront.spinTo(deg, degrees, speed, pct, false);
+    mot_dtLeftBack.spinTo(deg, degrees, speed, pct, true);
+    }else{
+      mot_dtRightFront.resetRotation();
+      mot_dtRightBack.resetRotation();
+      mot_dtLeftFront.resetRotation();
+      mot_dtLeftBack.resetRotation();
+      mot_dtRightFront.spinTo(deg, degrees, speed, pct, false);
+      mot_dtRightBack.spinTo(deg, degrees, speed, pct, false);
+      mot_dtLeftFront.spinTo(-deg, degrees, -speed, pct, false);
+      mot_dtLeftBack.spinTo(-deg, degrees, -speed, pct, true);
+    }
+  }
+}
+
+void programmingSkills(){
+  /*driveWheels(100, 100, false);
+    moveArm(40, 25, false);
+  driveWheels(6500, 100, true);
+  mot_frontClaw.spin(reverse, 100, pct);
+  wait(1, timeUnits::sec);
+  driveWheels(-5400, -100, true);
+  mot_frontClaw.spin(forward, 100, pct);
+  wait(1, timeUnits::sec);
+  driveWheels(-500, -100, true);*/
+
+
+
+  //drive to blue mobile goal
+  driveWheels(1500, 100, true);
+  mot_frontClaw.spin(reverse, 100, pct);
+  wait(1, timeUnits::sec);
+  driveWheels(-500, -70, true);
+  turnWheels(950, 100, false, true);
+  //score blue goal and neutral goal
+  //square up on wall
+  driveWheels(5800, 100, true);
+  //release blue goal
+  mot_frontClaw.spin(forward, 100, pct);
+  wait(2, timeUnits::sec);
+  mot_frontClaw.stop();
+    moveArm(40, 25, true);
+
+  //return to start wall
+  driveWheels(-6500, -100, true);
+  //avoid balance board
+  driveWheels(1500, 100, true);
+  //turn to large goal
+  turnWheels(450, 100, true, true);
+
+  //score large goal
+  driveWheels(5500, 100, true);
+  
+  //go score red goal
+  /*
+  driveWheels(-1000, -100, true);
+  turnWheels(1400, 100, false, true);
+  driveWheels(4000, 100, true);
+
+  mot_frontClaw.spin(forward, 100, pct);
+  wait(1, timeUnits::sec);
+  driveWheels(-5000, 100, true);
+  */
+
+
+
+
+
+
+
+}
 void autonomous(){
   cont.Screen.clearScreen();
   cont.Screen.setCursor(0, 0);
@@ -133,7 +255,7 @@ void autonomous(){
   moveArm(513, 75, true);
 
   //drive forward small amount
-   mot_dtRightFront.resetRotation();
+  mot_dtRightFront.resetRotation();
   mot_dtRightBack.resetRotation();
   mot_dtLeftFront.resetRotation();
   mot_dtLeftBack.resetRotation();
@@ -311,20 +433,21 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   Init();
- autonomous();
+  programmingSkills();
+ //autonomous();
   //wait for 45 seconds for auto to complete
   //wait(45, timeUnits::sec);
   //wait for auto completion
-  beginDriver();
+ // beginDriver();
  // TOGGLEINTAKE.pressed(toggleIntake);        // Handle (  X   Button) Toggle Intake Button Pressed   
   // BREAKMODETOGGLE.pressed(toggleBreakMode);  // Handle (  Y   Button) Toggle Break Mode Button Pressed 
   // TURN180DEG.pressed(turn180Deg);            // Handle (  A   Button) Toggle Intake Pressed      
   // SLIDERACTUATE.pressed(doSliderMotion);     // Handle (  B   Button) Toggle Intake Pressed   
 
   // Begin Program Logic
-  cont.Screen.clearScreen();
+ /* cont.Screen.clearScreen();
   cont.Screen.setCursor(0, 0);
-  cont.Screen.print("Auto.");
+  cont.Screen.print("Auto.");*/
   //begins driving procedure
   eventLoop();
   while(1){
