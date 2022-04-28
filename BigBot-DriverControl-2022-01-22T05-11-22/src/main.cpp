@@ -232,6 +232,35 @@ void autonomous(){
 
   //AUTO CODE HERE
 
+  //Drive to alliance mobile goal
+
+  //Open claw to drop rings in alliance mobile goal
+
+  //Back up small amount 
+
+  //Turn 90 degrees towards neutral goals
+
+  //Go forward to small neutral goal
+
+  //Grab small neutral goal with front/back claw 
+
+  //Turn 90 degrees towards large neutral goal
+
+  //Drive forward to large neutral goal
+
+  //Grab large neutral goal
+
+  //Turn 90 degrees towards team zone
+
+  //Drive into team zone 
+
+
+
+
+
+
+
+
 
   allowDriverOperated = true;
 }
