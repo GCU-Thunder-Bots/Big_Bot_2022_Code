@@ -229,14 +229,19 @@ void autonomous(){
   mot_dtLeftFront.resetRotation();
   mot_dtLeftBack.resetRotation();
   
-
+  //Position Robot in back corner facing the 
   //AUTO CODE HERE
 
   //Drive to alliance mobile goal
+  driveWheels(360, 100, true);
 
   //Open claw to drop rings in alliance mobile goal
+  mot_frontClaw.spin(forward, 100, pct);
+  wait(200, timeUnits::msec);
+  mot_frontClaw.spin(forward, 0, pct);
 
   //Back up small amount 
+  driveWheels(-180, 100, true);
 
   //Turn 90 degrees towards neutral goals
 
@@ -253,14 +258,6 @@ void autonomous(){
   //Turn 90 degrees towards team zone
 
   //Drive into team zone 
-
-
-
-
-
-
-
-
 
   allowDriverOperated = true;
 }
