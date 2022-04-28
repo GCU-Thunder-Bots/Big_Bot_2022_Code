@@ -59,30 +59,16 @@ using code = vision::code;
 bool intakeState = false;
 bool allowMotion = true;
 bool allowDriverOperated = false;
+bool clawOpen = true;
+bool backClawOpen = true;
 float speedControls = 2;
 
 float map(float input, float instart, float instop, float outstart, float outstop) {
   return outstart + (outstop - outstart) * ((input - instart) / (instop - instart));
 }
 
-void moveArm(float degs, float speed, bool waitToFinish){
-  bool moveCup = false;
-  if(degs > 100){
-    moveCup = true;
-  }
-  if(moveCup){
-    mot_arm.startSpinTo(degs, degrees, speed, pct);
-    while(mot_arm.isSpinning()){
-      ring_cup.spinTo(ring_cup.rotation(degrees)+10.5, degrees, 75, pct, true);
-    }
-  }else{
-    mot_arm.spinTo(degs, degrees, speed, pct, waitToFinish);
-  }
-}
 
-void moveCup(float rot, float speed, bool waitToFinish){
-  ring_cup.spinTo(rot, degrees, speed, pct, waitToFinish);
-}
+
 
 
 
@@ -102,10 +88,6 @@ void Init(){
   mot_dtLeftFront.resetRotation();
   mot_dtLeftBack.resetRotation();
 
-  //reset arm and cup rotations
-  mot_arm.resetRotation();
-  ring_cup.resetPosition();
-  //wait(0.5, timeUnits::sec);
 }
 void beginDriver() {
   allowMotion = true;
@@ -198,8 +180,8 @@ void programmingSkills(){
   driveWheels(1500, 100, true);
   mot_frontClaw.spin(reverse, 100, pct);
   wait(1, timeUnits::sec);
-  driveWheels(-500, -70, true);
-  turnWheels(950, 100, false, true);
+  driveWheels(-340, -70, true);
+  turnWheels(940, 100, true, true);
   //score blue goal and neutral goal
   //square up on wall
   driveWheels(5800, 100, true);
@@ -207,17 +189,16 @@ void programmingSkills(){
   mot_frontClaw.spin(forward, 100, pct);
   wait(2, timeUnits::sec);
   mot_frontClaw.stop();
-    moveArm(40, 25, true);
 
   //return to start wall
   driveWheels(-6500, -100, true);
   //avoid balance board
   driveWheels(1500, 100, true);
   //turn to large goal
-  turnWheels(450, 100, true, true);
+  turnWheels(450, 100, false, true);
 
   //score large goal
-  driveWheels(5500, 100, true);
+  driveWheels(5000, 100, true);
   
   //go score red goal
   /*
@@ -242,49 +223,16 @@ void autonomous(){
   cont.Screen.setCursor(0, 0);
   cont.Screen.print("Auto Active.");
   
-  //set arm position neutral
-  //mot_arm.spinTo(40, degrees, 25, pct, true);
-  moveArm(40, 25, true);
-  moveCup(30, 25, true);
-  //ring_cup.spinTo(30, degrees, 25, pct, true);
-
- /* mot_arm.startSpinTo(500, degrees, 75, pct);
-  while(mot_arm.isSpinning()){
-    ring_cup.spinTo(ring_cup.rotation(degrees)+10.5, degrees, 75, pct, true);
-  }*/
-  moveArm(513, 75, true);
-
   //drive forward small amount
   mot_dtRightFront.resetRotation();
   mot_dtRightBack.resetRotation();
   mot_dtLeftFront.resetRotation();
   mot_dtLeftBack.resetRotation();
-  mot_dtRightFront.spinTo(-1110, degrees, -100, pct, false);
-  mot_dtRightBack.spinTo(-1110, degrees, -100, pct, false);
-  mot_dtLeftFront.spinTo(-1110, degrees, -100, pct, false);
-  mot_dtLeftBack.spinTo(-1110, degrees, -100, pct, true);
-  moveArm(490, -55, true);
-  //this_thread::sleep_for(15, timeUnits::sec);
-  wait(1, timeUnits::sec);
+  
 
-  //ring_cup.spinTo(30, degrees, 15, pct, true);
-  moveCup(27, 10, true);
-  //this_thread::sleep_for(2);
-  wait(2, timeUnits::sec);
-  mot_dtRightFront.resetRotation();
-  mot_dtRightBack.resetRotation();
-  mot_dtLeftFront.resetRotation();
-  mot_dtLeftBack.resetRotation();
-  mot_dtRightFront.spinTo(700, degrees, -100, pct, false);
-  mot_dtRightBack.spinTo(700, degrees, -100, pct, false);
-  mot_dtLeftFront.spinTo(700, degrees, -100, pct, false);
-  mot_dtLeftBack.spinTo(700, degrees, -100, pct, true);
-  //reset arm to default before driver mode
-  //mot_arm.spinTo(40, degrees, 25, pct, true);
-  moveArm(40, 25, true);
-  moveCup(30, 25, true);
-  //ring_cup.spinTo(30, degrees, 25, pct, true);
-  //start driver mode
+  //AUTO CODE HERE
+
+
   allowDriverOperated = true;
 }
 
@@ -321,106 +269,34 @@ void TankDrive(float xAxis, float yAxis){
 }
 
 void eventLoop() {
-
-  bool raising = false;
-  cont.Screen.clearScreen();;
-    //mot_arm.spinTo(40, rotationUnits::deg, 25, pct, false);
   while(allowMotion == true && allowDriverOperated) {
     TankDrive(cont.Axis3.position(), cont.Axis2.position());
-
-    if(cont.ButtonX.pressing()){
-      if(speedControls ==1){
-        speedControls =5;
-      }else{
-        speedControls = 1;
-      }
-    }
 
     //simple claw controls
     if(cont.ButtonA.pressing()){
       mot_frontClaw.spin(forward, 100, pct);
+      clawOpen =true;
     }else if(cont.ButtonB.pressing()){
       mot_frontClaw.spin(reverse, 100, pct);
+      clawOpen = false;
     }else{
-      mot_frontClaw.spin(forward, 0, pct);
-    }
-    //grab
-    if(cont.ButtonL2.pressing()){
-      //spin to 100 degrees at 25% power and don't wait to finish
-     // ring_cup.spinTo(115, rotationUnits::deg, 15, pct, false );
-      moveCup(115, 15, false);
-    }
-    //pick up
-    else if(cont.ButtonR2.pressing()){
-      //spin to 30 degrees at 45% power and don't wait to finish
-      //ring_cup.spinTo(30, rotationUnits::deg, 25, pct, false);
-      moveCup(30, 25, false);
-      moveArm(40, 25, false);
-      //mot_arm.spinTo(40, rotationUnits::deg, 25, pct, false);
-    }
-
-    if(cont.ButtonL1.pressing()){
-      raising = true;
-      //ring_cup.spinTo(200, rotationUnits::deg, 5, velocityUnits::pct, false);
-    }
-    while(raising){
-       mot_arm.spinTo(1245, rotationUnits::deg, 75, pct, false);
-     // mot_arm.StartspinTo(1270, rotationUnits::deg, 75, velocityUnits::pct, false);
-      if(mot_arm.isSpinning()){
-        ring_cup.spinTo(ring_cup.rotation(rotationUnits::deg)+10.5, rotationUnits::deg, 75, pct, true);
-        cont.Screen.clearScreen();
-        cont.Screen.setCursor(0,0);
-        cont.Screen.print(ring_cup.rotation(rotationUnits::deg));
-
-      }
-      if(!mot_arm.isSpinning()){
-        //move ring cup 119.6
-        raising = false;
-      }
-       
-    }
-
-    if(cont.ButtonR1.pressing()){
-      if(!(ring_cup.rotation(rotationUnits::deg) >= 115 && ring_cup.rotation(rotationUnits::deg) <=145)){
-        moveCup(140, 15, false);
-      //ring_cup.spinTo(140, rotationUnits::deg, 15, pct);
-      }else{
-        moveCup(260, 15, false);
-        //ring_cup.spinTo(260, rotationUnits::deg);
+      if(clawOpen){
+        mot_frontClaw.spin(forward, 0, pct);
       }
     }
 
-   
-    cont.Screen.clearScreen();
-    cont.Screen.setCursor(0, 0);
-    cont.Screen.print("Ring Cup: ");
-    cont.Screen.print( ring_cup.rotation(rotationUnits::deg));
-    cont.Screen.setCursor(10, 0);
-    cont.Screen.print( " : Mot_arm: ");
-    cont.Screen.print(mot_arm.rotation(rotationUnits::deg));
 
-    /*
-    cont.Screen.clearScreen();
-    cont.Screen.setCursor(0, 0);
-    cont.Screen.print(mot_arm.rotation(rotationUnits::deg));
-*/
-    //simple button controls
-    /*if(cont.ButtonL1.pressing()){
-      mot_arm.spin(forward, 100, pct);
-    }else if(cont.ButtonR1.pressing()){
-      mot_arm.spin(reverse, 100, pct);
+    if(cont.ButtonX.pressing()){
+      mot_backClaw.spin(forward, 100, pct);
+      backClawOpen = true;
+    }else if(cont.ButtonY.pressing()){
+      mot_backClaw.spin(reverse, 100, pct);
+      backClawOpen = false;
     }else{
-      mot_arm.spin(forward, 0, pct);
+      if(backClawOpen){
+        mot_backClaw.spin(forward, 0, pct);
+      }
     }
-    if(cont.ButtonL2.pressing()){
-      ring_cup.spin(forward, 10, pct);
-    }else if(cont.ButtonR2.pressing()){
-      ring_cup.spin(reverse, 10, pct);
-    }else{
-      ring_cup.spin(forward, 0, pct);
-    }
-    
-    */
   }
 }
 
@@ -433,23 +309,27 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   Init();
- // programmingSkills();
- autonomous();
+  //programmingSkills();
+  //comp.autonomous(autonomous);
   //wait for 45 seconds for auto to complete
   //wait(45, timeUnits::sec);
   //wait for auto completion
- beginDriver();
+  //autonomous();
+  beginDriver();
+  allowDriverOperated = true;
+  eventLoop();
+
  // TOGGLEINTAKE.pressed(toggleIntake);        // Handle (  X   Button) Toggle Intake Button Pressed   
   // BREAKMODETOGGLE.pressed(toggleBreakMode);  // Handle (  Y   Button) Toggle Break Mode Button Pressed 
   // TURN180DEG.pressed(turn180Deg);            // Handle (  A   Button) Toggle Intake Pressed      
   // SLIDERACTUATE.pressed(doSliderMotion);     // Handle (  B   Button) Toggle Intake Pressed   
 
   // Begin Program Logic
-  cont.Screen.clearScreen();
+  /*cont.Screen.clearScreen();
   cont.Screen.setCursor(0, 0);
-  cont.Screen.print("Auto.");
+  cont.Screen.print("Auto.");*/
   //begins driving procedure
-  eventLoop();
+  //comp.drivercontrol(eventLoop);
   while(1){
     wait(1, timeUnits::sec);
   }

@@ -18,8 +18,7 @@ motor mot_dtLeftFront = motor(PORT4, ratio18_1, true);   // Front Left Drive Mot
 motor mot_dtLeftBack = motor(PORT5, ratio18_1, true);    // Back Left Drive Motor (left)
 
 motor mot_frontClaw = motor(PORT6, ratio36_1, true);
-motor mot_arm = motor(PORT7, ratio36_1, true);
-motor ring_cup = motor(PORT8, ratio18_1, false);
+motor mot_backClaw = motor(PORT7, ratio36_1, true);
 
 
 /*motor mot_scoopMotor = motor(PORT6, ratio18_1, false);    // Ring Scoop Motor (left)
