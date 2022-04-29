@@ -244,21 +244,24 @@ void autonomous(){
   driveWheels(-180, 100, true);
 
   //Turn 90 degrees towards neutral goals
-
+  turnWheels(950, 100, true, true);
   //Go forward to small neutral goal
-
-  //Grab small neutral goal with front/back claw 
-
+  driveWheels(2000, 100, true);
+  //Grab small neutral goal with front claw 
+  mot_frontClaw.spin(forward, 100, pct);
+  wait(500, timeUnits::msec);
   //Turn 90 degrees towards large neutral goal
-
+  turnWheels(950, 100, true, false);
   //Drive forward to large neutral goal
-
+  driveWheels(500, 100, true);
   //Grab large neutral goal
-
+  mot_backClaw.spin(forward, 100, pct);
+  wait(500, timeUnits::msec);
   //Turn 90 degrees towards team zone
-
+  turnWheels(950, 100, false, true);
   //Drive into team zone 
-
+  driveWheels(-1000, 100, true);
+  //enable driver control period
   allowDriverOperated = true;
 }
 
